@@ -1,0 +1,7 @@
+{
+  "name": "LeafDoctor AI",
+  "description": "An advanced plant health diagnostic tool that uses AI to identify leaf diseases from photos.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
