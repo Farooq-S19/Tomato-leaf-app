@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import Home from './components/Home';
-import AboutApp from './components/AboutApp';
-import AboutDiseases from './components/AboutDiseases';
-import Analyzer from './components/Analyzer';
-import Gallery from './components/Gallery';
-import { AppView, GalleryItem } from './types';
+import Home from './components/Home.tsx';
+import AboutApp from './components/AboutApp.tsx';
+import AboutDiseases from './components/AboutDiseases.tsx';
+import Analyzer from './components/Analyzer.tsx';
+import Gallery from './components/Gallery.tsx';
+import { AppView, GalleryItem } from './types.ts';
 import { Leaf, ArrowLeft, Shield } from 'lucide-react';
 
 const App: React.FC = () => {
