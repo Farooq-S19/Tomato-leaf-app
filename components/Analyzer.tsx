@@ -1,18 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
-// Added Microscope to lucide-react imports
-import { Camera, Upload, RefreshCw, X, AlertCircle, CheckCircle, Sparkles, Save, ShieldCheck, Activity, Target, Crosshair, ZoomIn, Info, Terminal, Fingerprint, Layers, Microscope } from 'lucide-react';
-import { analyzeLeafImage } from '../services/geminiService';
-import { AnalysisResult, GalleryItem } from '../types';
+
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Camera, Upload, RefreshCw, X, AlertCircle, CheckCircle, Sparkles, Save, Target, Crosshair, ZoomIn, Info, Terminal, Fingerprint, Layers, Microscope } from 'lucide-react';
+import { analyzeLeafImage } from '../services/geminiService.ts';
+import { AnalysisResult, GalleryItem } from '../types.ts';
 
 interface AnalyzerProps {
   onSave: (item: GalleryItem) => void;
 }
-
-const playSound = (url: string) => {
-  const audio = new Audio(url);
-  audio.volume = 0.5;
-  audio.play().catch(e => console.log('Sound blocked.'));
-};
 
 const SOUNDS = {
   CLICK: 'https://assets.mixkit.co/active_storage/sfx/700/700-preview.mp3',
@@ -60,7 +54,40 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const scanningSoundRef = useRef<HTMLAudioElement | null>(null);
+  
+  const clickAudio = useRef<HTMLAudioElement | null>(null);
+  const scanAudio = useRef<HTMLAudioElement | null>(null);
+  const successAudio = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    // Preload audio assets for zero-latency feedback
+    clickAudio.current = new Audio(SOUNDS.CLICK);
+    scanAudio.current = new Audio(SOUNDS.WHOOSH);
+    scanAudio.current.loop = true;
+    scanAudio.current.volume = 0.15;
+    successAudio.current = new Audio(SOUNDS.SUCCESS);
+    
+    return () => {
+      scanAudio.current?.pause();
+      clickAudio.current = null;
+      scanAudio.current = null;
+      successAudio.current = null;
+    };
+  }, []);
+
+  const playClick = () => {
+    if (clickAudio.current) {
+      clickAudio.current.currentTime = 0;
+      clickAudio.current.play().catch(() => {});
+    }
+  };
+
+  const playSuccess = () => {
+    if (successAudio.current) {
+      successAudio.current.currentTime = 0;
+      successAudio.current.play().catch(() => {});
+    }
+  };
 
   useEffect(() => {
     if (showCamera) startCamera();
@@ -103,7 +130,7 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
 
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
-      playSound(SOUNDS.CLICK);
+      playClick();
       const canvas = canvasRef.current;
       const video = videoRef.current;
       canvas.width = video.videoWidth;
@@ -136,11 +163,7 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
     setResult(null);
     setError(null);
     
-    const audio = new Audio(SOUNDS.WHOOSH);
-    audio.loop = true;
-    audio.volume = 0.2;
-    audio.play();
-    scanningSoundRef.current = audio;
+    scanAudio.current?.play().catch(() => {});
     
     try {
       const diagnosis = await analyzeLeafImage(image);
@@ -150,9 +173,9 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
       setError(err.message || "Diagnostic connection lost.");
     } finally {
       setIsAnalyzing(false);
-      if (scanningSoundRef.current) {
-        scanningSoundRef.current.pause();
-        scanningSoundRef.current = null;
+      if (scanAudio.current) {
+        scanAudio.current.pause();
+        scanAudio.current.currentTime = 0;
       }
     }
   };
@@ -167,7 +190,7 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
       timestamp: Date.now()
     });
     setIsSaved(true);
-    playSound(SOUNDS.SUCCESS);
+    playSuccess();
   };
 
   const reset = () => {
@@ -192,7 +215,7 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
             <button
-              onClick={() => setShowCamera(true)}
+              onClick={() => { playClick(); setShowCamera(true); }}
               className="group p-6 md:p-8 glass-card rounded-3xl md:rounded-[2.5rem] hover:shadow-lg transition-all text-center flex flex-col items-center border-slate-100"
             >
               <div className="w-12 h-12 md:w-16 md:h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center group-hover:bg-emerald-600 transition-all shadow-md">
@@ -203,7 +226,7 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
             </button>
 
             <button
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => { playClick(); fileInputRef.current?.click(); }}
               className="group p-6 md:p-8 glass-card rounded-3xl md:rounded-[2.5rem] hover:shadow-lg transition-all text-center flex flex-col items-center border-slate-100"
             >
               <div className="w-12 h-12 md:w-16 md:h-16 bg-white border border-slate-100 text-slate-900 rounded-2xl flex items-center justify-center group-hover:bg-slate-900 group-hover:text-white transition-all shadow-md">
@@ -354,7 +377,7 @@ const Analyzer: React.FC<AnalyzerProps> = ({ onSave }) => {
           <AlertCircle size={32} className="mx-auto text-red-500 mb-2" />
           <h4 className="font-black uppercase text-sm tracking-widest">Pipeline Error</h4>
           <p className="mono text-[9px] mt-1">{error}</p>
-          <button onClick={() => setError(null)} className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg font-black text-[10px] uppercase shadow-md active:scale-95">Reset</button>
+          <button onClick={() => { playClick(); setError(null); }} className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg font-black text-[10px] uppercase shadow-md active:scale-95">Reset</button>
         </div>
       )}
     </div>
