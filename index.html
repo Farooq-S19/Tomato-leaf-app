@@ -50,7 +50,6 @@
             100% { transform: translateY(0px) rotate(0deg); }
         }
 
-        /* Blowing leaf animation */
         @keyframes leaf-blow {
             0% { transform: translate(-10vw, -10vh) rotate(0deg) scale(0.5); opacity: 0; }
             20% { opacity: 0.3; }
@@ -78,19 +77,19 @@
 <script type="importmap">
 {
   "imports": {
-    "lucide-react": "https://esm.sh/lucide-react@0.460.0?external=react",
-    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.568.0",
     "react/": "https://esm.sh/react@^19.2.4/",
     "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react-dom": "https://esm.sh/react-dom@^19.2.4"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0"
   }
 }
 </script>
 </head>
 <body>
     <div id="root"></div>
-    <!-- Explicitly load the index.tsx as a module for Netlify compatibility -->
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

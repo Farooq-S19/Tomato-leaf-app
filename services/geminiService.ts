@@ -1,9 +1,8 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult } from "../types";
+import { AnalysisResult } from "../types.ts";
 
 export const analyzeLeafImage = async (base64Image: string): Promise<AnalysisResult> => {
-  // Always use this exact initialization pattern as per guidelines.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const prompt = `Analyze this image of a plant leaf. The system is currently optimized for tomato plant (Solanum lycopersicum) diagnostics, but should identify any species present.

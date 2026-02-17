@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { GalleryItem } from '../types';
+import { GalleryItem } from '../types.ts';
 import { Trash2, Calendar, Search, Leaf, ArrowRight, X, Filter, CheckCircle, AlertTriangle, BarChart3, ChevronRight, Shield, Info, Microscope } from 'lucide-react';
 
 interface GalleryProps {
@@ -150,7 +150,6 @@ const Gallery: React.FC<GalleryProps> = ({ items, onDelete }) => {
                   </div>
 
                   <div className="space-y-8">
-                    {/* SIGNIFICANTLY EXPANDED DESCRIPTION AREA */}
                     <div className="space-y-4">
                        <h4 className="flex items-center gap-2 text-[8px] md:text-[10px] font-black text-slate-800 uppercase tracking-widest border-l-4 border-emerald-500 pl-3">Full Physiological Diagnostics Report</h4>
                        <div className="glass-card p-6 md:p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group">

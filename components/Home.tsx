@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { AppView } from '../types';
+import { AppView } from '../types.ts';
 import { Leaf, Info, ShieldAlert, LayoutGrid, Sparkles, ChevronRight, Activity, Database, Crosshair } from 'lucide-react';
 
 interface HomeProps {
@@ -106,7 +106,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate, galleryCount }) => {
           </div>
           
           <div className="mt-6 md:mt-0 relative flex items-center justify-center">
-             {/* Pulse Animation for Light Theme */}
              <div className="absolute inset-0 bg-emerald-500/10 rounded-full animate-ping group-hover:bg-emerald-500/20 duration-1000" />
              <div className="absolute inset-0 bg-emerald-500/5 rounded-full animate-pulse group-hover:bg-emerald-500/10 duration-700 scale-125" />
              
